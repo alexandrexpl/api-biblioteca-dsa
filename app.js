@@ -1,33 +1,24 @@
-const express = require('express');
-const app = express();
-const port = 3000;
+require('dotenv').config();
 
-// Importação das rotas
-// const usuarioRouter = require('./router/usuario_router');
-// const autorRouter = require('./router/autor_router');
-// const livroRouter = require('./router/livro_router');
-// const emprestimoRouter = require('./router/emprestimo_router');
-// const loginController = require('./controller/login_controller');
+const express = require('express');
+const pool = require('./repository/bd');
+const app = express();
 
 app.use(express.json());
 
-// Middlewares globais
-app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
-    next();
-});
-
 app.get('/', (req, res) => {
-    res.send('API da Biblioteca funcionando!');
+    res.send('API da Biblioteca OK!');
 });
 
-// Rotas da aplicação
-// app.post('/api/login', loginController.realizarLogin);
-// app.use('/api/usuarios', usuarioRouter);
-// app.use('/api/autores', autorRouter);
-// app.use('/api/livros', livroRouter);
-// app.use('/api/emprestimos', emprestimoRouter);
+pool.query('SELECT NOW()', (err, res) => {
+    if (err) {
+        console.error('❌ Erro ao conectar no Banco de Dados:', err.message);
+    } else {
+        console.log('✅ Banco de Dados conectado com sucesso');
 
-app.listen(port, () => {
-    console.log(`Servidor rodando na porta ${port}`);
+        const PORT = process.env.PORT || 3000;
+        app.listen(PORT, () => {
+            console.log(`Servidor rodando na porta ${PORT}`);
+        });
+    }
 });

@@ -9,10 +9,4 @@ const pool = new Pool({
     database: process.env.DB_NAME || "biblioteca_db"
 });
 
-async function connect() {
-    return await pool.connect();
-}
-
-module.exports = {
-    connect
-}
+module.exports = pool;
