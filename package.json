@@ -1,0 +1,19 @@
+{
+    "name": "api-biblioteca",
+    "version": "1.0.0",
+    "description": "Trabalho Final - Desenvolvimento de Serviços e APIs",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "dev": "nodemon app.js"
+    },
+    "dependencies": {
+        "bcrypt": "^5.1.1",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "pg": "^8.16.3"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.4"
+    }
+}
