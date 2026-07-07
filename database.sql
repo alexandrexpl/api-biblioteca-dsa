@@ -1,5 +1,7 @@
 -- Script de Inicialização do Banco de Dados da Biblioteca
 -- Copiem este código e rodem no Query Tool do pgAdmin local
+-- Versão mesclada: mantém usuarios/autores/livros e adiciona tipos_cliente, clientes,
+-- e o novo modelo de emprestimos (com múltiplos livros por empréstimo)
 
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
@@ -23,13 +25,44 @@ CREATE TABLE livros (
     FOREIGN KEY (autor_id) REFERENCES autores(id) ON DELETE RESTRICT
 );
 
+-- Tipos de cliente
+-- RN3: cada tipo define quantos livros o cliente pode retirar ao mesmo tempo
+CREATE TABLE tipos_cliente (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL,
+    quantidade_maxima_livros INT NOT NULL
+);
+
+-- Clientes
+-- Quem retira os livros. Diferente de "usuarios" (que são os bibliotecários que fazem login)
+CREATE TABLE clientes (
+    id SERIAL PRIMARY KEY,
+    matricula VARCHAR(20) UNIQUE NOT NULL,
+    nome VARCHAR(100) NOT NULL,
+    tipo_cliente_id INT NOT NULL,
+    email VARCHAR(100),
+    telefone VARCHAR(20),
+    FOREIGN KEY (tipo_cliente_id) REFERENCES tipos_cliente(id)
+);
+
+-- Empréstimos
+-- Cada empréstimo pertence a um cliente e já guarda o prazo de entrega (RN2)
 CREATE TABLE emprestimos (
     id SERIAL PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    livro_id INT NOT NULL,
+    cliente_id INT NOT NULL,
     data_retirada DATE NOT NULL DEFAULT CURRENT_DATE,
-    data_devolucao DATE,
-    status VARCHAR(20) DEFAULT 'ATIVO',
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    data_entrega DATE NOT NULL,          -- RN2: retirada + 15 dias, calculado na criação
+    data_devolucao DATE,                 -- só é preenchido quando o cliente devolve
+    status VARCHAR(20) DEFAULT 'ATIVO',  -- ATIVO ou DEVOLVIDO
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+);
+
+-- Itens do empréstimo
+-- Tabela associativa que permite VÁRIOS livros no mesmo empréstimo
+CREATE TABLE emprestimo_livros (
+    id SERIAL PRIMARY KEY,
+    emprestimo_id INT NOT NULL,
+    livro_id INT NOT NULL,
+    FOREIGN KEY (emprestimo_id) REFERENCES emprestimos(id) ON DELETE CASCADE,
     FOREIGN KEY (livro_id) REFERENCES livros(id)
 );
