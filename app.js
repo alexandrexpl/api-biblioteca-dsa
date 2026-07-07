@@ -3,34 +3,27 @@ require('dotenv').config();
 const express = require('express');
 const pool = require('./repository/bd');
 
-//att Herian: import das rotas 
+//att Herian: import das rotas
 const autorRouter = require('./router/autorRouter');
 const livroRouter = require('./router/livroRouter');
-
-//att Alexandre: import das rotas
-const usuarioRouter = require('./router/usuario_router');
-const loginController = require('./controller/login_controller');
+const emprestimoRouter = require('./router/emprestimoRouter');
+const tipoClienteRouter = require('./router/tipoClienteRouter');
+const clienteRouter = require('./router/clienteRouter');
 
 const app = express();
 
 app.use(express.json());
 
-// Rota inicial de teste
-app.get('/', (req, res) => {
-    res.send('API da Biblioteca OK!');
-});
-
-//           REGISTRO DAS ROTAS
-
-//att Alexandre: rotas de autenticação e usuários
-app.post('/api/login', loginController.realizarLogin);
-app.use('/api/usuarios', usuarioRouter);
-
 //att Herian: registro das rotas no express
 app.use('/api', autorRouter);
 app.use('/api', livroRouter);
+app.use('/api', emprestimoRouter);
+app.use('/api', tipoClienteRouter);
+app.use('/api', clienteRouter);
 
-// Teste de conexão com o banco e inicialização do servidor
+app.get('/', (req, res) => {
+    res.send('API da Biblioteca OK!');
+});
 
 pool.query('SELECT NOW()', (err, res) => {
     if (err) {
